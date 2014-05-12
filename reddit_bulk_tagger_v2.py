@@ -16,7 +16,7 @@ COMMENT_LIMIT = 1000
 SUBMISSION_LIMIT = 100
 KARMA_THRESHOLD = 1
 
-USER_AGENT = "BulkTagger/0.1.3"
+USER_AGENT = "BulkTagger/0.1.4"
 
 def main():
     r = reddit.Reddit(user_agent=USER_AGENT)
