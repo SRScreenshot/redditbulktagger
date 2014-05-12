@@ -5,7 +5,7 @@ from collections import defaultdict
 import json
 import sys
 
-import reddit
+import praw as reddit
 
 subreddit_tags = {
         "MensRights": ("MRA", "red"),
