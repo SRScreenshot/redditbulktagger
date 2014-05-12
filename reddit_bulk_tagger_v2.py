@@ -37,7 +37,7 @@ def main():
                 thing_count += 1
                 if thing_count % 100 == 0:
                     print("Seen {} things ...".format(thing_count), file=sys.stderr)
-                redditors[thing.author.name] += thing.ups - thing.downs
+                redditors[thing.author] += thing.ups - thing.downs
 
         for redditor, karma in redditors.iteritems():
             if karma > KARMA_THRESHOLD:
