@@ -8,30 +8,32 @@ import sys
 import praw as reddit
 
 subreddit_tags = {
-        "MensRights": ("MRA", "red"),
+        "MensRights": "MRA",
 
-        "TheRedPill": ("TRPer", "red"),
-        "AlreadyRed": ("Super TRPer", "red"),
-        "RedPillWomen": ("RedPillWoman", "red"),
+        "TheRedPill": "TRPer",
+        "AlreadyRed": "Super TRPer",
+        "RedPillWomen": "RedPillWoman",
 
-        "antisrs": ("antisrs", "red"),
-        "SRSSucks": ("SRSSucker", "red"),
+        "antisrs": "antisrs",
+        "SRSSucks": "SRSSucker",
 }
+
+TAG_COLOR = "red"
 
 COMMENT_LIMIT = 1000
 SUBMISSION_LIMIT = 100
-KARMA_THRESHOLD = 1
+KARMA_THRESHOLD = 5
 
 USER_AGENT = "BulkTagger/0.1.4"
 
 def main():
     r = reddit.Reddit(user_agent=USER_AGENT)
+    redditors = defaultdict(lambda: defaultdict(int))
     tags = {}
 
-    for subreddit, tag in subreddit_tags.iteritems():
+    for subreddit in subreddit_tags.keys():
         print("Inspecting subreddit {}".format(subreddit), file=sys.stderr)
         thing_count = 0
-        redditors = defaultdict(int)
         sr = r.get_subreddit(subreddit)
 
         new_comments = sr.get_comments(limit=COMMENT_LIMIT)
@@ -44,13 +46,17 @@ def main():
                 if thing_count % 100 == 0:
                     print("Seen {} things ...".format(thing_count), file=sys.stderr)
                 if thing.author:
-                    redditors[thing.author.name] += thing.ups - thing.downs
+                    redditor = thing.author.name
+                    redditors[redditor][subreddit] += thing.ups - thing.downs
 
-        for redditor, karma in redditors.iteritems():
-            if karma > KARMA_THRESHOLD:
-                tags[redditor] = {"tag": tag[0], "color": tag[1]}
+    for redditor, seen_in_subs in redditors.iteritems():
+        matched_tags = [subreddit_tags[sub] for sub, karma in seen_in_subs.items() if karma > KARMA_THRESHOLD]
+        if len(matched_tags) == 0:
+            continue
+        compound_tag = " / ".join(sorted(matched_tags))
+        tags[redditor] = {"tag": compound_tag, "color": TAG_COLOR}
 
-    json.dump(tags, sys.stdout)
+    json.dump(tags, sys.stdout, sort_keys=True, indent=4, separators=(',', ': '))
     print("Generated {} tags.".format(len(tags.keys())), file=sys.stderr)
 
 if __name__ == "__main__":
