@@ -9,7 +9,13 @@ import praw as reddit
 
 subreddit_tags = {
         "MensRights": ("MRA", "red"),
+        
+        "TheRedPill": ("TRPer", "red"),
+        "AlreadyRed": ("Super TRPer", "red"),
+        "RedPillWomen": ("RedPillWoman", "red"),
+        
         "antisrs": ("antisrs", "red"),
+        "SRSSucks": ("SRSSucker", "red"),
 }
 
 COMMENT_LIMIT = 1000
